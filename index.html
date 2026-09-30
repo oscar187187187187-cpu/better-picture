@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ReGen AI - Dating & Fit Generator (Grok AI)</title>
+  <style>
+    :root {
+      --bg-color: #0b0f19;
+      --card-bg: rgba(22, 29, 47, 0.7);
+      --border-color: #2a344d;
+      --accent-color: #6366f1;
+      --accent-hover: #4f46e5;
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    header h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #a5b4fc, #6366f1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+    }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 900px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.5rem;
+      backdrop-filter: blur(12px);
+    }
+
+    .api-section {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .api-section label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background: rgba(11, 15, 25, 0.6);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-main);
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .input-field:focus {
+      border-color: var(--accent-color);
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 640px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .upload-box {
+      border: 2px dashed var(--border-color);
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.2s;
+      min-height: 220px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(11, 15, 25, 0.3);
+    }
+
+    .upload-box:hover {
+      border-color: var(--accent-color);
+      background: rgba(99, 102, 241, 0.05);
+    }
+
+    .upload-box input {
+      display: none;
+    }
+
+    .upload-box img {
+      max-width: 100%;
+      max-height: 180px;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+
+    .upload-label {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+    }
+
+    .upload-title {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+      font-size: 1rem;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 1rem;
+      background: var(--accent-color);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .btn:hover {
+      background: var(--accent-hover);
+    }
+
+    .btn:active {
+      transform: scale(0.99);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .output-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      text-align: center;
+    }
+
+    .output-box {
+      width: 100%;
+      min-height: 350px;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(11, 15, 25, 0.6);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .output-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .loader {
+      display: none;
+      border: 4px solid rgba(255, 255, 255, 0.1);
+      border-top: 4px solid var(--accent-color);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>ReGen AI Photo Studio</h1>
+    <p>Erstelle realistische Dating- & Lifestyle-Fotos mit Grok AI</p>
+  </header>
+
+  <div class="container">
+    
+    <!-- API KEY EINSTELLUNGEN -->
+    <div class="card api-section">
+      <label for="apiKey">xAI / Grok API Key</label>
+      <input type="password" id="apiKey" class="input-field" placeholder="xai-xxxxxxxxxxxxxxxxxxxxxxxx">
+    </div>
+
+    <!-- BILD UPLOADS -->
+    <div class="grid-2">
+      <!-- Referenz-Foto (Aesthetic/Vibe) -->
+      <div class="card">
+        <div class="upload-title">1. Ästhetik & Pose (Vorlage)</div>
+        <div class="upload-box" onclick="document.getElementById('refPhoto').click()">
+          <input type="file" id="refPhoto" accept="image/*" onchange="previewImage(this, 'refPreview')">
+          <div id="refPreview">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">📸</div>
+            <div>Klicke um Vorlage-Foto zu wählen</div>
+            <div class="upload-label">(Hintergrund, Licht & Vibe)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- User-Foto (Fit / Gesicht) -->
+      <div class="card">
+        <div class="upload-title">2. Dein Outfit & Gesicht</div>
+        <div class="upload-box" onclick="document.getElementById('fitPhoto').click()">
+          <input type="file" id="fitPhoto" accept="image/*" onchange="previewImage(this, 'fitPreview')">
+          <div id="fitPreview">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">🕺</div>
+            <div>Klicke um dein Foto zu wählen</div>
+            <div class="upload-label">(Dein Gesicht & Anziehsachen)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ZUSATZ-PROMPT -->
+    <div class="card api-section">
+      <label for="extraPrompt">Zusätzliche Anpassungen (Optional)</label>
+      <input type="text" id="extraPrompt" class="input-field" placeholder="z. B. warmes Sonnenuntergangslicht, ultra-realistisch, 8k, Bokeh Effekte">
+    </div>
+
+    <!-- GENERIEREN BUTTON -->
+    <button id="generateBtn" class="btn" onclick="generatePhoto()">Foto generieren</button>
+
+    <!-- ERGEBNIS BEREICH -->
+    <div class="card output-section">
+      <div class="upload-title">Dein ReGen Ergebnis</div>
+      <div class="output-box">
+        <div id="loader" class="loader"></div>
+        <div id="placeholderText" style="color: var(--text-muted);">Das generierte Foto erscheint hier</div>
+        <img id="outputImg" style="display: none;" alt="Generiertes Foto">
+      </div>
+      <a id="downloadBtn" style="display: none;" class="btn" download="regen-photo.png">Foto herunterladen</a>
+    </div>
+
+  </div>
+
+  <script>
+    let refBase64 = null;
+    let fitBase64 = null;
+
+    // Vorschau-Funktion für Uploads
+    function previewImage(input, previewId) {
+      const file = input.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const container = document.getElementById(previewId);
+          container.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+          if (previewId === 'refPreview') refBase64 = e.target.result;
+          if (previewId === 'fitPreview') fitBase64 = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    // Hauptfunktion zum Aufruf der Grok / xAI API
+    async function generatePhoto() {
+      const apiKey = document.getElementById('apiKey').value.trim();
+      const extraPrompt = document.getElementById('extraPrompt').value.trim();
+      const loader = document.getElementById('loader');
+      const placeholderText = document.getElementById('placeholderText');
+      const outputImg = document.getElementById('outputImg');
+      const downloadBtn = document.getElementById('downloadBtn');
+      const generateBtn = document.getElementById('generateBtn');
+
+      if (!apiKey) {
+        alert('Bitte gib deinen xAI / Grok API Key ein.');
+        return;
+      }
+
+      if (!refBase64 || !fitBase64) {
+        alert('Bitte lade beide Fotos hoch: Das Vorlage-Foto und dein Fit-Foto.');
+        return;
+      }
+
+      // UI auf Ladezustand setzen
+      generateBtn.disabled = true;
+      loader.style.display = 'block';
+      placeholderText.style.display = 'none';
+      outputImg.style.display = 'none';
+      downloadBtn.style.display = 'none';
+
+      try {
+        // Prompts zusammenbauen
+        const promptText = `Analyse internal composition: Take the exact human face, body structure, and clothing/outfit from Image 2 (User/Fit). Seamlessly place and integrate this person into the composition, environment, background, aesthetic lighting, camera angle, and mood of Image 1 (Style Reference). Keep the final image hyper-realistic, high resolution, photographic quality, natural skin texture, and accurate proportions. Additional adjustments: ${extraPrompt}`;
+
+        // xAI API Request
+        const response = await fetch('https://api.x.ai/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`
+          },
+          body: JSON.stringify({
+            model: "grok-2-vision-1212",
+            messages: [
+              {
+                role: "user",
+                content: [
+                  { type: "text", text: promptText },
+                  { type: "image_url", image_url: { url: refBase64 } },
+                  { type: "image_url", image_url: { url: fitBase64 } }
+                ]
+              }
+            ],
+            max_tokens: 1000
+          })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error?.message || 'Fehler bei der API-Anfrage.');
+        }
+
+        // Falls Bildgenerierungs-URL oder Ergebnis geliefert wird
+        const resultUrl = data.choices[0]?.message?.content || null;
+
+        // Visualisierung
+        if (resultUrl && (resultUrl.startsWith('http') || resultUrl.startsWith('data:image'))) {
+          outputImg.src = resultUrl;
+          outputImg.style.display = 'block';
+          downloadBtn.href = resultUrl;
+          downloadBtn.style.display = 'inline-block';
+        } else {
+          // Falls Grok Text/Prompt-Instruktionen zurückgibt
+          alert("Grok Analyse abgeschlossen: " + resultUrl);
+        }
+
+      } catch (err) {
+        alert('Fehler: ' + err.message);
+        placeholderText.style.display = 'block';
+      } finally {
+        loader.style.display = 'none';
+        generateBtn.disabled = false;
+      }
+    }
+  </script>
+</body>
+</html>
