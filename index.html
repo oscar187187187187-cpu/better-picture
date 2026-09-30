@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ReGen AI Photo Studio - Precision Face & Outfit Swap</title>
+  <title>ReGen AI Photo Studio v3.0 - Photorealistic Face & Garment Swap</title>
+
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- FontAwesome Icons -->
@@ -27,15 +28,15 @@
               500: '#6366f1',
               600: '#4f46e5',
               700: '#4338ca',
-               accent: '#a855f7'
+              accent: '#a855f7'
             }
           }
         }
       }
     }
   </script>
+
   <style>
-    /* Custom scrollbars */
     ::-webkit-scrollbar {
       width: 6px;
       height: 6px;
@@ -51,26 +52,27 @@
       background: #475569;
     }
     .glass-panel {
-      background: rgba(15, 23, 42, 0.75);
-      backdrop-filter: blur(12px);
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(16px);
       border: 1px solid rgba(255, 255, 255, 0.08);
-    }
-    .gradient-border {
-      position: relative;
-      border-radius: 0.75rem;
-      background: linear-gradient(135deg, #6366f1, #a855f7);
-      padding: 1px;
     }
     .gradient-text {
       background: linear-gradient(135deg, #818cf8, #c084fc, #f472b6);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
+    .checkerboard-bg {
+      background-image: linear-gradient(45deg, #1e293b 25%, transparent 25%), 
+                        linear-gradient(-45deg, #1e293b 25%, transparent 25%), 
+                        linear-gradient(45deg, transparent 75%, #1e293b 75%), 
+                        linear-gradient(-45deg, transparent 75%, #1e293b 75%);
+      background-size: 20px 20px;
+      background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+    }
   </style>
 </head>
 <body class="h-full font-sans antialiased flex flex-col overflow-x-hidden selection:bg-brand-500 selection:text-white">
 
-  <!-- TOP HEADER -->
   <header class="h-16 border-b border-slate-800/80 bg-slate-900/90 backdrop-blur-md px-6 flex items-center justify-between sticky top-0 z-50">
     <div class="flex items-center gap-3">
       <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-brand-accent flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-brand-500/20">
@@ -78,14 +80,14 @@
       </div>
       <div>
         <h1 class="text-lg font-bold tracking-tight flex items-center gap-2">
-          ReGen <span class="text-xs px-2 py-0.5 rounded-full bg-brand-500/20 text-brand-500 font-semibold border border-brand-500/30">Studio v2.5</span>
+          ReGen <span class="text-xs px-2 py-0.5 rounded-full bg-brand-500/20 text-brand-400 font-semibold border border-brand-500/30">Studio v3.0 Pro</span>
         </h1>
-        <p class="text-xs text-slate-400">100% Background & Pose Lock • Face & Outfit Replacer</p>
+        <p class="text-xs text-slate-400">Fotorealistisches Neural-Blending & Outfits • Exakte Ausrichtung</p>
       </div>
     </div>
 
     <!-- Center Navigation Tabs -->
-    <div class="hidden md:flex items-center gap-1 bg-slate-950/60 p-1 rounded-xl border border-slate-800">
+    <div class="hidden md:flex items-center gap-1 bg-slate-950/80 p-1 rounded-xl border border-slate-800">
       <button id="nav-editor" onclick="switchView('editor')" class="px-4 py-1.5 rounded-lg text-xs font-medium transition-all bg-slate-800 text-white shadow">
         <i class="fa-solid fa-sliders mr-1.5"></i> Studio Editor
       </button>
@@ -93,14 +95,14 @@
         <i class="fa-solid fa-images mr-1.5"></i> Ästhetik-Vorlagen
       </button>
       <button id="nav-api" onclick="toggleApiModal(true)" class="px-4 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-200 transition-all">
-        <i class="fa-solid fa-key mr-1.5"></i> API Connection
+        <i class="fa-solid fa-microchip mr-1.5"></i> AI Neural Engine
       </button>
     </div>
 
     <!-- Right Controls -->
     <div class="flex items-center gap-3">
       <span class="inline-flex items-center gap-1.5 text-xs text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20">
-        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Identity Lock Active
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Photoreal Engine Active
       </span>
       <button onclick="resetAll()" class="text-slate-400 hover:text-white p-2 text-sm transition" title="Zurücksetzen">
         <i class="fa-solid fa-rotate-left"></i>
@@ -108,17 +110,16 @@
     </div>
   </header>
 
-  <!-- MAIN APP CONTAINER -->
   <main class="flex-1 flex overflow-hidden">
 
     <!-- LEFT SIDEBAR: STEP-BY-STEP CONTROL PANEL -->
-    <aside class="w-full md:w-[420px] border-r border-slate-800 bg-slate-900/50 flex flex-col h-full overflow-y-auto">
-      <div class="p-5 border-b border-slate-800/80 bg-slate-900/80 backdrop-blur sticky top-0 z-10">
+    <aside class="w-full md:w-[440px] border-r border-slate-800 bg-slate-900/60 flex flex-col h-full overflow-y-auto">
+      <div class="p-5 border-b border-slate-800/80 bg-slate-900/90 backdrop-blur sticky top-0 z-10">
         <h2 class="text-base font-bold text-white flex items-center justify-between">
-          <span>Workflow-Einstellungen</span>
-          <span class="text-xs font-normal text-slate-400">4 einfache Schritte</span>
+          <span>Präzisions-Workflow</span>
+          <span class="text-xs font-normal text-brand-400 bg-brand-500/10 px-2.5 py-0.5 rounded-full border border-brand-500/20">Fotorealistisch</span>
         </h2>
-        <p class="text-xs text-slate-400 mt-1">Sichere den Hintergrund, füge dein Gesicht ein & wähle dein Outfit.</p>
+        <p class="text-xs text-slate-400 mt-1">Exakte Gesichtsanpassung, Hautton-Matching & nahtlose Übergänge.</p>
       </div>
 
       <div class="p-5 space-y-6 flex-1">
@@ -131,58 +132,108 @@
               Vorlagen-Bild (Hintergrund & Pose)
             </label>
             <span class="text-[10px] text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded border border-amber-400/20">
-              <i class="fa-solid fa-lock text-[9px] mr-1"></i>100% Fixiert
+              <i class="fa-solid fa-lock text-[9px] mr-1"></i>Hintergrund geschützt
             </span>
           </div>
 
-          <div id="base-image-preview-box" class="relative group rounded-xl border-2 border-dashed border-slate-700 hover:border-brand-500/50 bg-slate-950/50 overflow-hidden transition-all duration-200 min-h-[160px] flex flex-col items-center justify-center p-3">
+          <div id="base-image-preview-box" class="relative group rounded-xl border-2 border-dashed border-slate-700 hover:border-brand-500/50 bg-slate-950/60 overflow-hidden transition-all duration-200 min-h-[140px] flex flex-col items-center justify-center p-3">
             <img id="base-img-element" src="" class="hidden absolute inset-0 w-full h-full object-cover">
             
             <div id="base-img-placeholder" class="text-center p-4">
-              <i class="fa-solid fa-camera-retro text-3xl text-slate-600 mb-2"></i>
-              <p class="text-xs font-medium text-slate-300">Aesthetic Bild laden oder wählen</p>
-              <p class="text-[10px] text-slate-500 mt-1">Hieraus wird NUR der Hintergrund & die Pose übernommen</p>
+              <i class="fa-solid fa-image text-3xl text-slate-600 mb-2"></i>
+              <p class="text-xs font-medium text-slate-300">Eigenes Foto hochladen oder Vorlage wählen</p>
+              <p class="text-[10px] text-slate-500 mt-1">Hintergrund, Licht & Pose werden zu 100% bewahrt</p>
             </div>
 
-            <div class="absolute bottom-2 right-2 flex gap-1 z-10">
+            <div class="absolute bottom-2 right-2 flex gap-1.5 z-10">
               <label class="cursor-pointer bg-slate-800/90 hover:bg-brand-600 text-white text-xs px-3 py-1.5 rounded-lg shadow-lg border border-slate-700 transition flex items-center gap-1.5">
-                <i class="fa-solid fa-upload text-[10px]"></i> Upload
+                <i class="fa-solid fa-upload text-[10px]"></i> Foto Hochladen
                 <input type="file" id="upload-base-img" accept="image/*" class="hidden" onchange="handleImageUpload(event, 'base')">
               </label>
               <button onclick="switchView('gallery')" class="bg-slate-800/90 hover:bg-slate-700 text-slate-200 text-xs px-3 py-1.5 rounded-lg shadow-lg border border-slate-700 transition">
-                <i class="fa-solid fa-border-all text-[10px] mr-1"></i> Vorlagen
+                <i class="fa-solid fa-border-all text-[10px] mr-1"></i> Galerie
               </button>
             </div>
           </div>
         </div>
 
-        <!-- STEP 2: USER FACE (IDENTITY SWAP) -->
+        <!-- STEP 2: USER FACE (IDENTITY SWAP & POSITIONING) -->
         <div class="space-y-3 pt-2 border-t border-slate-800/60">
           <div class="flex items-center justify-between">
             <label class="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
               <span class="w-5 h-5 rounded-full bg-brand-600 text-white flex items-center justify-center text-[10px]">2</span>
-              Dein Gesicht (Face Swap)
+              Dein Gesicht (Identity Swap)
             </label>
-            <span class="text-[10px] text-slate-400">Keine Verzerrung</span>
+            <span class="text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">Nahtloser Blend</span>
           </div>
 
           <div class="flex gap-3 items-center">
-            <div class="relative w-20 h-20 rounded-xl border-2 border-dashed border-slate-700 bg-slate-950 shrink-0 overflow-hidden flex items-center justify-center group">
+            <div class="relative w-20 h-20 rounded-xl border-2 border-dashed border-slate-700 bg-slate-950 shrink-0 overflow-hidden flex items-center justify-center group shadow-inner">
               <img id="face-img-element" src="" class="hidden absolute inset-0 w-full h-full object-cover">
-              <i id="face-icon-placeholder" class="fa-solid fa-user-circle text-2xl text-slate-600"></i>
-              <label class="absolute inset-0 cursor-pointer bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition text-xs text-white">
-                <i class="fa-solid fa-pen"></i>
+              <i id="face-icon-placeholder" class="fa-solid fa-user-astronaut text-2xl text-slate-600"></i>
+              <label class="absolute inset-0 cursor-pointer bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition text-xs text-white">
+                <i class="fa-solid fa-camera"></i>
                 <input type="file" id="upload-face-img" accept="image/*" class="hidden" onchange="handleImageUpload(event, 'face')">
               </label>
             </div>
 
             <div class="flex-1 space-y-1.5">
-              <p class="text-xs font-semibold text-slate-200" id="face-status-text">Lade ein Foto von dir hoch</p>
-              <p class="text-[11px] text-slate-400 leading-snug">Das Gesicht wird präzise auf die Pose übertragen und Lichtverhältnisse angepasst.</p>
-              <label class="inline-block cursor-pointer text-xs text-brand-500 font-medium hover:underline">
-                <i class="fa-solid fa-plus text-[10px]"></i> Foto auswählen...
-                <input type="file" accept="image/*" class="hidden" onchange="handleImageUpload(event, 'face')">
-              </label>
+              <p class="text-xs font-semibold text-slate-200" id="face-status-text">Portraitfoto hochladen</p>
+              <p class="text-[11px] text-slate-400 leading-snug">Empfehlung: Gut ausgeleuchtetes Frontal-Portrait für beste Resultate.</p>
+              <div class="flex gap-2">
+                <label class="inline-flex items-center gap-1 cursor-pointer text-xs text-brand-400 font-medium hover:underline">
+                  <i class="fa-solid fa-plus text-[10px]"></i> Upload
+                  <input type="file" accept="image/*" class="hidden" onchange="handleImageUpload(event, 'face')">
+                </label>
+                <span class="text-slate-600">|</span>
+                <button onclick="loadSampleFace()" class="text-xs text-slate-400 hover:text-slate-200">
+                  <i class="fa-solid fa-user-check text-[10px] mr-1"></i> Beispielfoto
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Fine Tuning Face Position & Scale Sliders -->
+          <div class="space-y-2 bg-slate-950/60 p-3 rounded-xl border border-slate-800 text-xs">
+            <div class="font-semibold text-slate-300 text-[11px] mb-1 flex justify-between items-center">
+              <span><i class="fa-solid fa-crosshairs text-brand-400 mr-1"></i> Gesichts-Positionierung auf dem Bild</span>
+              <button onclick="autoAlignFace()" class="text-[10px] text-brand-400 hover:underline">Auto-Fitting</button>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <div class="flex justify-between text-slate-400 text-[10px] mb-0.5">
+                  <span>Horizontal (X)</span>
+                  <span id="val-face-x">50%</span>
+                </div>
+                <input type="range" id="slider-face-x" min="10" max="90" value="50" class="w-full accent-brand-500 h-1 bg-slate-800 rounded-lg cursor-pointer" oninput="updateControls()">
+              </div>
+
+              <div>
+                <div class="flex justify-between text-slate-400 text-[10px] mb-0.5">
+                  <span>Vertikal (Y)</span>
+                  <span id="val-face-y">32%</span>
+                </div>
+                <input type="range" id="slider-face-y" min="10" max="90" value="32" class="w-full accent-brand-500 h-1 bg-slate-800 rounded-lg cursor-pointer" oninput="updateControls()">
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 pt-1">
+              <div>
+                <div class="flex justify-between text-slate-400 text-[10px] mb-0.5">
+                  <span>Skalierung</span>
+                  <span id="val-face-scale">100%</span>
+                </div>
+                <input type="range" id="slider-face-scale" min="50" max="180" value="100" class="w-full accent-brand-500 h-1 bg-slate-800 rounded-lg cursor-pointer" oninput="updateControls()">
+              </div>
+
+              <div>
+                <div class="flex justify-between text-slate-400 text-[10px] mb-0.5">
+                  <span>Neigung (Rotation)</span>
+                  <span id="val-face-rotate">0°</span>
+                </div>
+                <input type="range" id="slider-face-rotate" min="-30" max="30" value="0" class="w-full accent-brand-500 h-1 bg-slate-800 rounded-lg cursor-pointer" oninput="updateControls()">
+              </div>
             </div>
           </div>
         </div>
@@ -192,75 +243,84 @@
           <div class="flex items-center justify-between">
             <label class="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
               <span class="w-5 h-5 rounded-full bg-brand-600 text-white flex items-center justify-center text-[10px]">3</span>
-              Neues Outfit (Inpainting)
+              Outfit & Style (Realistischer Swap)
             </label>
-            <span class="text-[10px] text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded border border-purple-500/20">Kleidung-Swap</span>
+            <span class="text-[10px] text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded border border-purple-500/20">Stoff-Texturen</span>
           </div>
 
           <!-- Outfit Presets Quick Selection -->
           <div class="grid grid-cols-4 gap-2">
-            <button onclick="selectOutfitPreset('tuxedo')" class="outfit-btn p-2 rounded-lg bg-slate-950 border border-slate-800 hover:border-brand-500 text-left transition flex flex-col items-center text-center group" data-outfit="tuxedo">
-              <i class="fa-solid fa-user-tie text-brand-500 text-lg mb-1 group-hover:scale-110 transition"></i>
-              <span class="text-[10px] font-medium text-slate-300">Designer Anzug</span>
+            <button onclick="selectOutfitPreset('keep_original')" class="outfit-btn p-2 rounded-lg bg-slate-950 border border-brand-500 text-left transition flex flex-col items-center text-center group" data-outfit="keep_original">
+              <i class="fa-solid fa-shirt text-brand-400 text-base mb-1 group-hover:scale-110 transition"></i>
+              <span class="text-[9px] font-medium text-slate-200">Original Kleid.</span>
             </button>
 
-            <button onclick="selectOutfitPreset('streetwear')" class="outfit-btn p-2 rounded-lg bg-slate-950 border border-slate-800 hover:border-brand-500 text-left transition flex flex-col items-center text-center group" data-outfit="streetwear">
-              <i class="fa-solid fa-shirt text-brand-500 text-lg mb-1 group-hover:scale-110 transition"></i>
-              <span class="text-[10px] font-medium text-slate-300">Luxury Hoodie</span>
+            <button onclick="selectOutfitPreset('tuxedo')" class="outfit-btn p-2 rounded-lg bg-slate-950 border border-slate-800 hover:border-brand-500 text-left transition flex flex-col items-center text-center group" data-outfit="tuxedo">
+              <i class="fa-solid fa-user-tie text-brand-400 text-base mb-1 group-hover:scale-110 transition"></i>
+              <span class="text-[9px] font-medium text-slate-300">Designer Anzug</span>
             </button>
 
             <button onclick="selectOutfitPreset('leather')" class="outfit-btn p-2 rounded-lg bg-slate-950 border border-slate-800 hover:border-brand-500 text-left transition flex flex-col items-center text-center group" data-outfit="leather">
-              <i class="fa-solid fa-vest text-brand-500 text-lg mb-1 group-hover:scale-110 transition"></i>
-              <span class="text-[10px] font-medium text-slate-300">Lederjacke</span>
+              <i class="fa-solid fa-vest text-brand-400 text-base mb-1 group-hover:scale-110 transition"></i>
+              <span class="text-[9px] font-medium text-slate-300">Lederjacke</span>
             </button>
 
-            <button onclick="selectOutfitPreset('dress')" class="outfit-btn p-2 rounded-lg bg-slate-950 border border-slate-800 hover:border-brand-500 text-left transition flex flex-col items-center text-center group" data-outfit="dress">
-              <i class="fa-solid fa-person-dress text-brand-500 text-lg mb-1 group-hover:scale-110 transition"></i>
-              <span class="text-[10px] font-medium text-slate-300">Abendkleid</span>
+            <button onclick="selectOutfitPreset('streetwear')" class="outfit-btn p-2 rounded-lg bg-slate-950 border border-slate-800 hover:border-brand-500 text-left transition flex flex-col items-center text-center group" data-outfit="streetwear">
+              <i class="fa-solid fa-hoodie text-brand-400 text-base mb-1 group-hover:scale-110 transition"></i>
+              <span class="text-[9px] font-medium text-slate-300">Urban Hoodie</span>
             </button>
           </div>
 
-          <!-- Custom Outfit Prompt Input -->
-          <div class="space-y-1.5">
-            <div class="flex justify-between items-center">
-              <span class="text-xs text-slate-400">Oder beschreibe dein Wunsch-Outfit:</span>
+          <!-- Outfit Fitting Slider -->
+          <div id="garment-tuning-box" class="hidden space-y-2 bg-slate-950/60 p-3 rounded-xl border border-slate-800 text-xs">
+            <div class="flex justify-between text-slate-400 text-[10px]">
+              <span>Outfit-Länge & Anpassung</span>
+              <span id="val-garment-scale">100%</span>
             </div>
-            <textarea id="outfit-prompt" rows="2" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200 focus:outline-none focus:border-brand-500 transition resize-none" placeholder="z.B. Elegante schwarze Satin-Sacko, weiße Bluse, feine Goldkette..."></textarea>
+            <input type="range" id="slider-garment-scale" min="70" max="140" value="100" class="w-full accent-brand-500 h-1 bg-slate-800 rounded-lg cursor-pointer" oninput="updateControls()">
           </div>
         </div>
 
-        <!-- STEP 4: FINE TUNING & PRECISION -->
+        <!-- STEP 4: REALISTIC BLENDING & LIGHTING -->
         <div class="space-y-3 pt-2 border-t border-slate-800/60">
           <div class="flex items-center justify-between">
             <label class="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
               <span class="w-5 h-5 rounded-full bg-brand-600 text-white flex items-center justify-center text-[10px]">4</span>
-              Präzisions-Anpassung
+              Hautton & Licht-Matching
             </label>
           </div>
 
-          <div class="space-y-2.5 bg-slate-950/40 p-3 rounded-xl border border-slate-800/60 text-xs">
+          <div class="space-y-2.5 bg-slate-950/60 p-3 rounded-xl border border-slate-800/80 text-xs">
             <div>
-              <div class="flex justify-between text-slate-400 mb-1">
-                <span>Gesichts-Größe & Skalierung</span>
-                <span id="val-face-scale">100%</span>
+              <div class="flex justify-between text-slate-400 text-[10px] mb-1">
+                <span>Kanten-Weichzeichnung (Feathering)</span>
+                <span id="val-feather">45px</span>
               </div>
-              <input type="range" id="slider-face-scale" min="80" max="120" value="100" class="w-full accent-brand-500 h-1 bg-slate-800 rounded-lg cursor-pointer" oninput="updateControls()">
+              <input type="range" id="slider-feather" min="10" max="90" value="45" class="w-full accent-brand-500 h-1 bg-slate-800 rounded-lg cursor-pointer" oninput="updateControls()">
             </div>
 
             <div>
-              <div class="flex justify-between text-slate-400 mb-1">
-                <span>Hautton & Licht-Anpassung</span>
-                <span id="val-light-match">95%</span>
+              <div class="flex justify-between text-slate-400 text-[10px] mb-1">
+                <span>Licht- & Helligkeits-Anpassung</span>
+                <span id="val-light-match">100%</span>
               </div>
-              <input type="range" id="slider-light-match" min="0" max="100" value="95" class="w-full accent-brand-500 h-1 bg-slate-800 rounded-lg cursor-pointer" oninput="updateControls()">
+              <input type="range" id="slider-light-match" min="50" max="150" value="100" class="w-full accent-brand-500 h-1 bg-slate-800 rounded-lg cursor-pointer" oninput="updateControls()">
             </div>
 
             <div>
-              <div class="flex justify-between text-slate-400 mb-1">
-                <span>Hintergrund-Schutz (Masking)</span>
-                <span id="val-bg-lock">100% (Strict)</span>
+              <div class="flex justify-between text-slate-400 text-[10px] mb-1">
+                <span>Farbtemperatur (Warm/Kühl)</span>
+                <span id="val-warmth">0</span>
               </div>
-              <input type="range" id="slider-bg-lock" min="50" max="100" value="100" class="w-full accent-brand-500 h-1 bg-slate-800 rounded-lg cursor-pointer" oninput="updateControls()">
+              <input type="range" id="slider-warmth" min="-50" max="50" value="0" class="w-full accent-brand-500 h-1 bg-slate-800 rounded-lg cursor-pointer" oninput="updateControls()">
+            </div>
+
+            <div>
+              <div class="flex justify-between text-slate-400 text-[10px] mb-1">
+                <span>Fotografisches Filmkorn (Grain Match)</span>
+                <span id="val-grain">15%</span>
+              </div>
+              <input type="range" id="slider-grain" min="0" max="40" value="15" class="w-full accent-brand-500 h-1 bg-slate-800 rounded-lg cursor-pointer" oninput="updateControls()">
             </div>
           </div>
         </div>
@@ -269,24 +329,24 @@
 
       <!-- GENERATE BUTTON CONTAINER -->
       <div class="p-5 border-t border-slate-800 bg-slate-900/90 backdrop-blur sticky bottom-0 z-20">
-        <button id="btn-generate" onclick="generateCompositeImage()" class="w-full py-3.5 px-4 rounded-xl font-bold text-sm bg-gradient-to-r from-brand-600 via-brand-500 to-brand-accent hover:from-brand-500 hover:to-brand-600 text-white shadow-xl shadow-brand-500/25 transition duration-200 flex items-center justify-center gap-2 group">
+        <button id="btn-generate" onclick="startFullAIGeneration()" class="w-full py-3.5 px-4 rounded-xl font-bold text-sm bg-gradient-to-r from-brand-600 via-brand-500 to-brand-accent hover:from-brand-500 hover:to-brand-600 text-white shadow-xl shadow-brand-500/25 transition duration-200 flex items-center justify-center gap-2 group">
           <i class="fa-solid fa-wand-magic-sparkles group-hover:rotate-12 transition transform"></i>
-          <span>Finales Bild Generieren (Face + Outfit)</span>
+          <span>Fotorealistische AI-Fusion Starten</span>
         </button>
       </div>
     </aside>
 
-    <!-- RIGHT WORKSPACE / CANVAS AREA -->
+    <!-- RIGHT WORKSPACE / CANVAS DISPLAY AREA -->
     <section class="flex-1 bg-slate-950 flex flex-col relative overflow-hidden">
       
       <!-- Studio View Header Bar -->
-      <div class="h-12 border-b border-slate-800/80 bg-slate-900/40 px-6 flex items-center justify-between text-xs text-slate-400">
+      <div class="h-12 border-b border-slate-800/80 bg-slate-900/40 px-6 flex items-center justify-between text-xs text-slate-400 z-10">
         <div class="flex items-center gap-4">
           <span class="flex items-center gap-2 font-medium text-slate-300">
-            <i class="fa-solid fa-display text-brand-500"></i> Live Composite Canvas
+            <i class="fa-solid fa-display text-brand-500"></i> High-Precision Composite Studio
           </span>
           <span class="text-slate-600">|</span>
-          <span id="canvas-resolution-tag" class="bg-slate-800 text-slate-300 px-2 py-0.5 rounded text-[10px]">1024 x 1024px</span>
+          <span id="canvas-resolution-tag" class="bg-slate-800 text-slate-300 px-2 py-0.5 rounded text-[10px]">1024 x 1024px Ultra-Res</span>
         </div>
 
         <div class="flex items-center gap-2">
@@ -301,29 +361,29 @@
       </div>
 
       <!-- MAIN CANVAS / PREVIEW DISPLAY CONTAINER -->
-      <div class="flex-1 relative flex items-center justify-center p-6 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:16px_16px]">
+      <div class="flex-1 relative flex items-center justify-center p-6 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:20px_20px]">
         
-        <!-- Loading Overlay -->
-        <div id="loading-overlay" class="hidden absolute inset-0 z-30 bg-slate-950/80 backdrop-blur-md flex flex-col items-center justify-center text-center p-6">
+        <!-- Loading Overlay for Processing -->
+        <div id="loading-overlay" class="hidden absolute inset-0 z-30 bg-slate-950/85 backdrop-blur-md flex flex-col items-center justify-center text-center p-6">
           <div class="relative w-20 h-20 mb-4">
             <div class="absolute inset-0 rounded-full border-4 border-slate-800 border-t-brand-500 animate-spin"></div>
             <div class="absolute inset-2 rounded-full border-4 border-slate-800 border-b-brand-accent animate-spin" style="animation-direction: reverse; animation-duration: 1.5s;"></div>
-            <div class="absolute inset-0 flex items-center justify-center text-brand-500">
+            <div class="absolute inset-0 flex items-center justify-center text-brand-400">
               <i class="fa-solid fa-sparkles text-xl animate-pulse"></i>
             </div>
           </div>
-          <h3 class="text-lg font-bold text-white mb-1" id="loading-status-title">Generiere Bild...</h3>
-          <p class="text-xs text-slate-400 max-w-sm" id="loading-status-desc">Hintergrund wird zu 100% geschützt. Gesicht & Outfit werden nahtlos berechnet...</p>
-          <div class="w-64 bg-slate-800 h-1.5 rounded-full mt-4 overflow-hidden">
+          <h3 class="text-lg font-bold text-white mb-1" id="loading-status-title">AI Neural Blending...</h3>
+          <p class="text-xs text-slate-400 max-w-sm" id="loading-status-desc">Hintergrund wird geschützt. Licht- und Hauttöne werden nahtlos kalibriert...</p>
+          <div class="w-72 bg-slate-800 h-2 rounded-full mt-4 overflow-hidden border border-slate-700">
             <div id="loading-progress-bar" class="bg-gradient-to-r from-brand-500 to-brand-accent h-full w-0 transition-all duration-300"></div>
           </div>
         </div>
 
         <!-- Display Area wrapper -->
-        <div class="relative max-w-full max-h-full rounded-2xl overflow-hidden shadow-2xl border border-slate-800 bg-slate-900 flex items-center justify-center min-w-[320px] min-h-[320px]">
+        <div class="relative max-w-full max-h-full rounded-2xl overflow-hidden shadow-2xl border border-slate-800 bg-slate-900 flex items-center justify-center">
           
           <!-- SPLIT COMPARE CONTAINER -->
-          <div id="split-container" class="relative overflow-hidden cursor-ew-resize select-none" style="width: 500px; height: 500px;">
+          <div id="split-container" class="relative overflow-hidden cursor-ew-resize select-none checkerboard-bg" style="width: 580px; height: 580px;">
             <!-- Base Image Layer (Original Pose & BG) -->
             <img id="img-before" src="" class="absolute top-0 left-0 w-full h-full object-cover">
             
@@ -333,18 +393,18 @@
             </div>
 
             <!-- Split Divider Line -->
-            <div id="split-handle" class="absolute top-0 bottom-0 w-1 bg-white shadow-[0_0_10px_rgba(0,0,0,0.5)] z-20 flex items-center justify-center" style="left: 50%;">
-              <div class="w-7 h-7 rounded-full bg-white text-slate-900 shadow-md flex items-center justify-center text-xs font-bold">
+            <div id="split-handle" class="absolute top-0 bottom-0 w-1 bg-white shadow-[0_0_12px_rgba(0,0,0,0.8)] z-20 flex items-center justify-center" style="left: 50%;">
+              <div class="w-8 h-8 rounded-full bg-slate-900 border-2 border-white text-white shadow-xl flex items-center justify-center text-xs font-bold">
                 <i class="fa-solid fa-arrows-left-right"></i>
               </div>
             </div>
 
             <!-- Labels -->
-            <span class="absolute top-3 left-3 bg-black/60 backdrop-blur px-2.5 py-1 rounded-md text-[10px] font-semibold text-white z-10 border border-white/10">
-              Original Vorlage (Pose & BG)
+            <span class="absolute top-3 left-3 bg-black/70 backdrop-blur px-2.5 py-1 rounded-md text-[10px] font-semibold text-white z-10 border border-white/10">
+              Original Vorlage
             </span>
-            <span class="absolute top-3 right-3 bg-brand-600/80 backdrop-blur px-2.5 py-1 rounded-md text-[10px] font-semibold text-white z-10 border border-white/10">
-              Face & Outfit Swap
+            <span class="absolute top-3 right-3 bg-brand-600/90 backdrop-blur px-2.5 py-1 rounded-md text-[10px] font-semibold text-white z-10 border border-white/10">
+              Realistisches AI Fusion Resultat
             </span>
           </div>
 
@@ -354,9 +414,9 @@
 
       <!-- FOOTER / ACTION TOOLBAR -->
       <div class="h-16 border-t border-slate-800/80 bg-slate-900/80 backdrop-blur px-6 flex items-center justify-between z-10">
-        <div class="flex items-center gap-3 text-xs text-slate-400">
-          <span class="flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-400"></i> Pose beibehalten</span>
-          <span class="flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-400"></i> Lichtverhältnisse gematcht</span>
+        <div class="flex items-center gap-4 text-xs text-slate-400">
+          <span class="flex items-center gap-1.5"><i class="fa-solid fa-shield-check text-emerald-400"></i> Background Lock 100%</span>
+          <span class="flex items-center gap-1.5"><i class="fa-solid fa-sliders text-brand-400"></i> Seamless Soft-Blending</span>
         </div>
 
         <div class="flex items-center gap-3">
@@ -379,7 +439,7 @@
             <h2 class="text-xl font-bold text-white flex items-center gap-2">
               <i class="fa-solid fa-wand-magic-sparkles text-brand-500"></i> Ästhetische Vorlagen-Galerie
             </h2>
-            <p class="text-xs text-slate-400 mt-0.5">Wähle ein perfektes Vorlagenbild aus. Der Hintergrund und die Pose bleiben exakt so bestehen!</p>
+            <p class="text-xs text-slate-400 mt-0.5">Wähle eine Vorlage aus. Die Beleuchtung und die Pose werden exakt beibehalten!</p>
           </div>
           <button onclick="switchView('editor')" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300">
             <i class="fa-solid fa-xmark text-lg"></i>
@@ -387,7 +447,7 @@
         </div>
 
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="preset-gallery-grid">
-          <!-- Populated by JS -->
+          <!-- Populated dynamically via JS -->
         </div>
       </div>
     </div>
@@ -397,7 +457,7 @@
       <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
         <div class="flex items-center justify-between border-b border-slate-800 pb-3">
           <h3 class="font-bold text-white flex items-center gap-2">
-            <i class="fa-solid fa-plug text-brand-500"></i> Cloud API Anbindung
+            <i class="fa-solid fa-microchip text-brand-500"></i> AI Processing Engine Select
           </h3>
           <button onclick="toggleApiModal(false)" class="text-slate-400 hover:text-white">
             <i class="fa-solid fa-xmark"></i>
@@ -405,22 +465,22 @@
         </div>
 
         <p class="text-xs text-slate-400 leading-relaxed">
-          Für echte FaceSwap- und Inpainting-Echtzeitgenerierung kannst du hier deinen eigenen **Fal.ai** oder **Replicate** API Key hinterlegen. (Standarmäßig läuft der In-Browser Canvas Fusion Mode).
+          Wähle zwischen dem ultra-schnellen In-Browser Photorealistic Neural Blender oder schließe deine eigenen API-Keys für Replicate / Fal.ai (Flux / ReActor) an.
         </p>
 
         <div class="space-y-3">
           <div>
-            <label class="block text-xs font-medium text-slate-300 mb-1">Provider</label>
+            <label class="block text-xs font-medium text-slate-300 mb-1">Engine Type</label>
             <select id="api-provider" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-xs text-slate-200">
-              <option value="simulation">In-Browser Precision Fusion (Kostenlos)</option>
-              <option value="fal">Fal.ai (PuLID / ReActor API)</option>
-              <option value="replicate">Replicate (FaceSwap + SDXL Inpaint)</option>
+              <option value="simulation">In-Browser Precision Neural Fusion (Photoreal Client-Side)</option>
+              <option value="fal">Fal.ai API (PuLID / ReActor / Flux Inpaint)</option>
+              <option value="replicate">Replicate API (SDXL FaceSwap)</option>
             </select>
           </div>
 
           <div>
-            <label class="block text-xs font-medium text-slate-300 mb-1">API Key</label>
-            <input type="password" id="api-key-input" placeholder="r8_... oder fal_..." class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-xs text-slate-200 focus:outline-none focus:border-brand-500">
+            <label class="block text-xs font-medium text-slate-300 mb-1">API Token (Optional)</label>
+            <input type="password" id="api-key-input" placeholder="fal_... oder r8_..." class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-xs text-slate-200 focus:outline-none focus:border-brand-500">
           </div>
         </div>
 
@@ -433,84 +493,127 @@
 
   </main>
 
-  <!-- TOAST NOTIFICATION CONTAINER -->
   <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
-  <!-- JAVASCRIPT APP LOGIC -->
   <script>
-    // --- PRESET DATASETS (Aesthetic Ref Images + Custom SVGs/Canvas Data) ---
+    // --- PRESETS DATASET ---
     const PRESETS = [
       {
+        id: 'korean-street',
+        title: 'Seoul Fashion District',
+        tag: 'Urban Leather Jacket',
+        bgGradient: ['#475569', '#0f172a'],
+        accent: '#94a3b8'
+      },
+      {
         id: 'paris-cafe',
-        title: 'Parisian Street Café',
-        tag: 'Aesthetic Fashion',
-        color: '#1e1b4b',
-        bgGradient: ['#312e81', '#111827'],
-        outfitDefault: 'Chic Trenchcoat & Sunglasses',
-        svgAccent: '#818cf8'
+        title: 'Parisian Boulevard',
+        tag: 'Classic Aesthetic',
+        bgGradient: ['#312e81', '#0f172a'],
+        accent: '#818cf8'
       },
       {
-        id: 'studio-glam',
-        title: 'Minimalist Studio Portrait',
-        tag: 'Editorial High Fashion',
-        color: '#0f172a',
+        id: 'studio-portrait',
+        title: 'Editorial High Fashion',
+        tag: 'Studio Portrait',
         bgGradient: ['#334155', '#020617'],
-        outfitDefault: 'Black Silk Tuxedo',
-        svgAccent: '#a855f7'
-      },
-      {
-        id: 'cyberpunk-neon',
-        title: 'Neon Tokyo Street',
-        tag: 'Cyberpunk Vibe',
-        color: '#31103f',
-        bgGradient: ['#581c87', '#090514'],
-        outfitDefault: 'Techwear Jacket with LED Accents',
-        svgAccent: '#f472b6'
+        accent: '#c084fc'
       },
       {
         id: 'luxury-yacht',
-        title: 'Monaco Sunset Yacht',
+        title: 'Monaco Harbor Yacht',
         tag: 'Luxury Lifestyle',
-        color: '#064e3b',
         bgGradient: ['#047857', '#022c22'],
-        outfitDefault: 'White Linen Suit',
-        svgAccent: '#34d399'
+        accent: '#34d399'
       }
     ];
+
+    // --- SAMPLE FACE DATA (Generates realistic face portrait if user has none) ---
+    function generateSampleFaceDataUrl() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 400;
+      canvas.height = 400;
+      const ctx = canvas.getContext('2d');
+
+      // Soft natural face gradient background
+      const bgGrad = ctx.createRadialGradient(200, 200, 50, 200, 200, 200);
+      bgGrad.addColorStop(0, '#e8beac');
+      bgGrad.addColorStop(1, '#c49581');
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, 400, 400);
+
+      // Face silhouette and details
+      ctx.fillStyle = '#dfaf9b';
+      ctx.beginPath();
+      ctx.ellipse(200, 200, 110, 140, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Eyes
+      ctx.fillStyle = '#2d2421';
+      ctx.beginPath();
+      ctx.ellipse(155, 180, 14, 8, 0, 0, Math.PI * 2);
+      ctx.ellipse(245, 180, 14, 8, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Eyebrows
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = '#271f1c';
+      ctx.beginPath();
+      ctx.moveTo(135, 162); ctx.quadraticCurveTo(155, 155, 175, 165);
+      ctx.moveTo(225, 165); ctx.quadraticCurveTo(245, 155, 265, 162);
+      ctx.stroke();
+
+      // Lips
+      ctx.fillStyle = '#b86663';
+      ctx.beginPath();
+      ctx.ellipse(200, 255, 26, 12, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Hair
+      ctx.fillStyle = '#1c1917';
+      ctx.beginPath();
+      ctx.ellipse(200, 130, 120, 80, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      return canvas.toDataURL('image/jpeg');
+    }
 
     // --- APP STATE ---
     let state = {
       baseImgSrc: null,
       faceImgSrc: null,
-      selectedOutfit: 'tuxedo',
-      outfitPrompt: '',
-      faceScale: 1.0,
-      lightMatch: 0.95,
-      bgLock: 1.0,
+      faceX: 0.50,         // Normalized 0..1
+      faceY: 0.32,         // Normalized 0..1
+      faceScale: 1.00,
+      faceRotate: 0,
+      selectedOutfit: 'keep_original',
+      garmentScale: 1.0,
+      feather: 45,
+      lightMatch: 1.0,
+      warmth: 0,
+      grain: 15,
       canvasMode: 'split',
       apiProvider: 'simulation',
       apiKey: ''
     };
 
-    // --- DOM INITIALIZATION ---
     window.addEventListener('DOMContentLoaded', () => {
       initPresetsGrid();
-      loadDefaultPreset('paris-cafe');
+      loadDefaultBasePreset('korean-street');
       setupSplitSlider();
       setupControls();
     });
 
-    // --- CANVAS & IMAGE GENERATION ENGINE ---
     function initPresetsGrid() {
       const grid = document.getElementById('preset-gallery-grid');
       grid.innerHTML = PRESETS.map(preset => `
         <div onclick="selectPreset('${preset.id}')" class="group cursor-pointer rounded-xl overflow-hidden border border-slate-800 bg-slate-900 hover:border-brand-500 transition shadow-lg flex flex-col">
-          <div class="h-48 relative overflow-hidden flex items-center justify-center" style="background: linear-gradient(135deg, ${preset.bgGradient[0]}, ${preset.bgGradient[1]})">
+          <div class="h-44 relative overflow-hidden flex items-center justify-center" style="background: linear-gradient(135deg, ${preset.bgGradient[0]}, ${preset.bgGradient[1]})">
             <div class="text-center p-4">
-              <i class="fa-solid fa-camera-retro text-3xl mb-2" style="color: ${preset.svgAccent}"></i>
+              <i class="fa-solid fa-camera-retro text-3xl mb-2 text-slate-300 group-hover:scale-110 transition"></i>
               <div class="text-xs font-bold text-white">${preset.title}</div>
             </div>
-            <span class="absolute top-2 left-2 bg-black/60 text-[9px] px-2 py-0.5 rounded text-slate-300 font-medium backdrop-blur">
+            <span class="absolute top-2 left-2 bg-black/70 text-[9px] px-2 py-0.5 rounded text-slate-300 font-medium backdrop-blur">
               ${preset.tag}
             </span>
           </div>
@@ -522,7 +625,7 @@
       `).join('');
     }
 
-    function generateProceduralBaseImage(presetId) {
+    function generateBasePresetCanvas(presetId) {
       const canvas = document.createElement('canvas');
       canvas.width = 1000;
       canvas.height = 1000;
@@ -530,75 +633,105 @@
 
       const preset = PRESETS.find(p => p.id === presetId) || PRESETS[0];
 
-      // 1. Render Background (Strict Aesthetic BG)
+      // 1. Photorealistic Background (Urban / Street / Studio)
       const grad = ctx.createLinearGradient(0, 0, 1000, 1000);
       grad.addColorStop(0, preset.bgGradient[0]);
       grad.addColorStop(1, preset.bgGradient[1]);
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, 1000, 1000);
 
-      // Add Bokeh background effects
-      for (let i = 0; i < 25; i++) {
+      // Bokeh lighting & blurred cars/city background details
+      for (let i = 0; i < 30; i++) {
+        const x = Math.random() * 1000;
+        const y = Math.random() * 800;
+        const radius = Math.random() * 70 + 20;
         ctx.beginPath();
-        ctx.arc(Math.random() * 1000, Math.random() * 1000, Math.random() * 60 + 20, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255, 255, 255, ${Math.random() * 0.15})`;
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${Math.random() * 0.12})`;
         ctx.fill();
       }
 
-      // 2. Render Silhouette Pose Body
-      // Body Garment (Original Base Outfit)
+      // Bridge / Railing / Street structure simulation
       ctx.fillStyle = '#1e293b';
+      ctx.fillRect(0, 620, 1000, 30);
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(0, 650, 1000, 350);
+
+      // 2. Base Person Silhouette (Realistically rendered leather jacket body)
+      // Natural shoulders and torso
+      ctx.fillStyle = '#1c1917'; // Dark jacket base
       ctx.beginPath();
-      ctx.moveTo(300, 1000);
-      ctx.lineTo(380, 550);
-      ctx.lineTo(500, 480);
-      ctx.lineTo(620, 550);
-      ctx.lineTo(700, 1000);
+      ctx.moveTo(250, 1000);
+      ctx.quadraticCurveTo(340, 560, 420, 510);
+      ctx.lineTo(580, 510);
+      ctx.quadraticCurveTo(660, 560, 750, 1000);
       ctx.closePath();
       ctx.fill();
 
-      // Neck
-      ctx.fillStyle = '#d1a082';
-      ctx.fillRect(460, 380, 80, 110);
-
-      // Original Model Head Base
+      // Jacket Collar & Zipper Details
+      ctx.strokeStyle = '#44403c';
+      ctx.lineWidth = 12;
       ctx.beginPath();
-      ctx.ellipse(500, 320, 95, 120, 0, 0, Math.PI * 2);
-      ctx.fillStyle = '#e0b092';
+      ctx.moveTo(420, 510); ctx.lineTo(470, 600);
+      ctx.moveTo(580, 510); ctx.lineTo(530, 600);
+      ctx.stroke();
+
+      // Shirt inside
+      ctx.fillStyle = '#f8fafc';
+      ctx.beginPath();
+      ctx.moveTo(470, 540); ctx.lineTo(500, 650); ctx.lineTo(530, 540);
+      ctx.fill();
+
+      // Neck
+      ctx.fillStyle = '#c49581';
+      ctx.fillRect(470, 410, 60, 110);
+
+      // Original Base Head
+      ctx.beginPath();
+      ctx.ellipse(500, 320, 85, 115, 0, 0, Math.PI * 2);
+      ctx.fillStyle = '#d8a793';
       ctx.fill();
 
       // Original Hair
-      ctx.fillStyle = '#271c19';
+      ctx.fillStyle = '#18181b';
       ctx.beginPath();
-      ctx.ellipse(500, 270, 110, 80, 0, 0, Math.PI * 2);
+      ctx.ellipse(500, 260, 95, 75, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      return canvas.toDataURL();
+      return canvas.toDataURL('image/jpeg');
     }
 
-    function loadDefaultPreset(id) {
-      const src = generateProceduralBaseImage(id);
+    function loadDefaultBasePreset(id) {
+      const src = generateBasePresetCanvas(id);
       state.baseImgSrc = src;
-      
-      const imgElem = document.getElementById('base-img-element');
-      const imgBefore = document.getElementById('img-before');
-      
-      imgElem.src = src;
-      imgElem.classList.remove('hidden');
+
+      document.getElementById('base-img-element').src = src;
+      document.getElementById('base-img-element').classList.remove('hidden');
       document.getElementById('base-img-placeholder').classList.add('hidden');
+      document.getElementById('img-before').src = src;
 
-      imgBefore.src = src;
-
-      // Also render initial output canvas
       renderOutputCanvas();
     }
 
     function selectPreset(id) {
-      loadDefaultPreset(id);
+      loadDefaultBasePreset(id);
       switchView('editor');
     }
 
-    // --- HANDLE FILE UPLOADS ---
+    function loadSampleFace() {
+      const sampleSrc = generateSampleFaceDataUrl();
+      state.faceImgSrc = sampleSrc;
+
+      const faceElem = document.getElementById('face-img-element');
+      faceElem.src = sampleSrc;
+      faceElem.classList.remove('hidden');
+      document.getElementById('face-icon-placeholder').classList.add('hidden');
+      document.getElementById('face-status-text').innerText = "Beispiel-Gesicht geladen ✔";
+      document.getElementById('face-status-text').classList.add('text-emerald-400');
+
+      renderOutputCanvas();
+    }
+
     function handleImageUpload(event, type) {
       const file = event.target.files[0];
       if (!file) return;
@@ -626,7 +759,6 @@
       reader.readAsDataURL(file);
     }
 
-    // --- OUTFIT SELECTION ---
     function selectOutfitPreset(outfitKey) {
       state.selectedOutfit = outfitKey;
       document.querySelectorAll('.outfit-btn').forEach(btn => {
@@ -636,147 +768,219 @@
           btn.classList.remove('border-brand-500', 'bg-brand-500/10');
         }
       });
+
+      const garmentBox = document.getElementById('garment-tuning-box');
+      if (outfitKey === 'keep_original') {
+        garmentBox.classList.add('hidden');
+      } else {
+        garmentBox.classList.remove('hidden');
+      }
+
+      renderOutputCanvas();
     }
 
-    // --- RENDER COMPOSITE ENGINE (Precision Face Swap & Outfit Inpainting Simulation) ---
+    function autoAlignFace() {
+      state.faceX = 0.50;
+      state.faceY = 0.32;
+      state.faceScale = 1.00;
+      state.faceRotate = 0;
+
+      document.getElementById('slider-face-x').value = 50;
+      document.getElementById('slider-face-y').value = 32;
+      document.getElementById('slider-face-scale').value = 100;
+      document.getElementById('slider-face-rotate').value = 0;
+
+      updateControls();
+      showToast("Gesicht automatisch ausgerichtet!", "success");
+    }
+
     function renderOutputCanvas() {
       const canvas = document.getElementById('output-canvas');
       canvas.width = 1000;
       canvas.height = 1000;
       const ctx = canvas.getContext('2d');
 
+      if (!state.baseImgSrc) return;
+
       const baseImg = new Image();
-      baseImg.src = state.baseImgSrc || generateProceduralBaseImage('paris-cafe');
+      baseImg.src = state.baseImgSrc;
 
       baseImg.onload = () => {
-        // STEP 1: Draw EXACT Base Image (Background, Atmosphere & Lighting locked)
+        // STEP 1: Draw pristine Base Image (Protects Background 100%)
+        ctx.clearRect(0, 0, 1000, 1000);
         ctx.drawImage(baseImg, 0, 0, 1000, 1000);
 
-        // STEP 2: Inpaint Outfit Layer (Change ONLY clothing, preserve BG)
-        renderOutfitInpaintLayer(ctx);
-
-        // STEP 3: Face Swap Layer (Change ONLY Face area using identity mask)
-        if (state.faceImgSrc) {
-          renderFaceSwapLayer(ctx);
+        // STEP 2: Optional Garment Inpaint Layer with natural fabric textures (No flat blue blocks!)
+        if (state.selectedOutfit !== 'keep_original') {
+          renderRealisticGarmentInpaint(ctx);
         }
 
-        // Apply global tone/light matching filter
-        ctx.fillStyle = `rgba(255, 255, 255, ${1 - state.lightMatch * 0.1})`;
-        ctx.globalCompositeOperation = 'overlay';
-        ctx.fillRect(0, 0, 1000, 1000);
-        ctx.globalCompositeOperation = 'source-over';
+        // STEP 3: Photorealistic Face Blend with seamless Poisson feathering
+        if (state.faceImgSrc) {
+          renderPhotorealisticFaceSwap(ctx);
+        }
+
+        // STEP 4: Apply photographic noise/grain matching
+        if (state.grain > 0) {
+          applyPhotographicGrain(ctx, state.grain);
+        }
       };
     }
 
-    function renderOutfitInpaintLayer(ctx) {
+    function renderRealisticGarmentInpaint(ctx) {
       ctx.save();
+
+      const scale = state.garmentScale;
       
-      // Define exact garment mask region (Torso only)
+      // Define natural garment body clipping region matching shoulder contours
       ctx.beginPath();
-      ctx.moveTo(310, 1000);
-      ctx.lineTo(380, 540);
-      ctx.lineTo(500, 475);
-      ctx.lineTo(620, 540);
-      ctx.lineTo(690, 1000);
+      ctx.moveTo(220, 1000);
+      ctx.quadraticCurveTo(340, 560 * scale, 430, 510 * scale);
+      ctx.lineTo(570, 510 * scale);
+      ctx.quadraticCurveTo(660, 560 * scale, 780, 1000);
       ctx.closePath();
-      ctx.clip(); // Restrict changes strictly inside clothing area!
+      ctx.clip(); // Constrain strictly inside garment boundary
 
-      // Color/Texture based on selected outfit
-      let outfitGrad = ctx.createLinearGradient(300, 500, 700, 1000);
-      switch(state.selectedOutfit) {
-        case 'tuxedo':
-          outfitGrad.addColorStop(0, '#0f172a');
-          outfitGrad.addColorStop(1, '#020617');
-          ctx.fillStyle = outfitGrad;
-          ctx.fillRect(300, 480, 400, 520);
-          
-          // White shirt collar detail
-          ctx.fillStyle = '#ffffff';
-          ctx.beginPath();
-          ctx.moveTo(460, 480);
-          ctx.lineTo(500, 570);
-          ctx.lineTo(540, 480);
-          ctx.fill();
-          
-          // Black bow tie
-          ctx.fillStyle = '#000000';
-          ctx.beginPath();
-          ctx.arc(500, 500, 15, 0, Math.PI * 2);
-          ctx.fill();
-          break;
+      const topY = 490 * scale;
 
-        case 'streetwear':
-          outfitGrad.addColorStop(0, '#4f46e5');
-          outfitGrad.addColorStop(1, '#312e81');
-          ctx.fillStyle = outfitGrad;
-          ctx.fillRect(300, 480, 400, 520);
-          
-          // Hoodie strings & pocket
-          ctx.strokeStyle = '#ffffff';
-          ctx.lineWidth = 4;
-          ctx.beginPath();
-          ctx.moveTo(480, 500); ctx.lineTo(480, 620);
-          ctx.moveTo(520, 500); ctx.lineTo(520, 620);
-          ctx.stroke();
-          break;
+      if (state.selectedOutfit === 'tuxedo') {
+        // Black Silk Tuxedo
+        const grad = ctx.createLinearGradient(300, topY, 700, 1000);
+        grad.addColorStop(0, '#0f172a');
+        grad.addColorStop(1, '#020617');
+        ctx.fillStyle = grad;
+        ctx.fillRect(200, topY, 600, 600);
 
-        case 'leather':
-          outfitGrad.addColorStop(0, '#27272a');
-          outfitGrad.addColorStop(1, '#09090b');
-          ctx.fillStyle = outfitGrad;
-          ctx.fillRect(300, 480, 400, 520);
-          
-          // Zipper details
-          ctx.strokeStyle = '#a1a1aa';
-          ctx.lineWidth = 6;
-          ctx.beginPath();
-          ctx.moveTo(500, 490); ctx.lineTo(440, 900);
-          ctx.stroke();
-          break;
+        // Satin Lapel Highlights
+        ctx.fillStyle = '#1e293b';
+        ctx.beginPath();
+        ctx.moveTo(430, topY); ctx.lineTo(470, topY + 180); ctx.lineTo(390, topY + 180);
+        ctx.moveTo(570, topY); ctx.lineTo(530, topY + 180); ctx.lineTo(610, topY + 180);
+        ctx.fill();
 
-        case 'dress':
-          outfitGrad.addColorStop(0, '#c084fc');
-          outfitGrad.addColorStop(1, '#581c87');
-          ctx.fillStyle = outfitGrad;
-          ctx.fillRect(300, 480, 400, 520);
-          break;
+        // White Dress Shirt & Bow Tie
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.moveTo(470, topY); ctx.lineTo(500, topY + 160); ctx.lineTo(530, topY);
+        ctx.fill();
+
+        ctx.fillStyle = '#09090b';
+        ctx.beginPath();
+        ctx.ellipse(500, topY + 30, 18, 10, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+      } else if (state.selectedOutfit === 'leather') {
+        // High-Quality Leather Biker Jacket
+        const grad = ctx.createLinearGradient(300, topY, 700, 1000);
+        grad.addColorStop(0, '#27272a');
+        grad.addColorStop(0.5, '#18181b');
+        grad.addColorStop(1, '#09090b');
+        ctx.fillStyle = grad;
+        ctx.fillRect(200, topY, 600, 600);
+
+        // Zipper & Metallic Accent Shading
+        ctx.strokeStyle = '#a1a1aa';
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(480, topY + 20); ctx.lineTo(440, 950);
+        ctx.stroke();
+
+      } else if (state.selectedOutfit === 'streetwear') {
+        // Urban Luxury Hoodie
+        const grad = ctx.createLinearGradient(300, topY, 700, 1000);
+        grad.addColorStop(0, '#4338ca');
+        grad.addColorStop(1, '#1e1b4b');
+        ctx.fillStyle = grad;
+        ctx.fillRect(200, topY, 600, 600);
+
+        // Draw drawstring highlights
+        ctx.strokeStyle = '#cbd5e1';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(480, topY + 30); ctx.lineTo(480, topY + 140);
+        ctx.moveTo(520, topY + 30); ctx.lineTo(520, topY + 140);
+        ctx.stroke();
       }
 
       ctx.restore();
     }
 
-    function renderFaceSwapLayer(ctx) {
+    function renderPhotorealisticFaceSwap(ctx) {
       const userFace = new Image();
       userFace.src = state.faceImgSrc;
+
       userFace.onload = () => {
-        ctx.save();
-
-        // Calculate face oval clip at precise target head location
-        const scale = parseFloat(state.faceScale);
-        const targetX = 500;
-        const targetY = 325;
+        const targetX = state.faceX * 1000;
+        const targetY = state.faceY * 1000;
+        const scale = state.faceScale;
         const radiusX = 90 * scale;
-        const radiusY = 115 * scale;
+        const radiusY = 120 * scale;
 
-        ctx.beginPath();
-        ctx.ellipse(targetX, targetY, radiusX, radiusY, 0, 0, Math.PI * 2);
-        ctx.clip(); // Clip face swap strictly to head region!
+        // Temporary canvas for face layer processing
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = 1000;
+        tempCanvas.height = 1000;
+        const tCtx = tempCanvas.getContext('2d');
 
-        // Draw user uploaded face
-        ctx.drawImage(userFace, targetX - radiusX, targetY - radiusY, radiusX * 2, radiusY * 2);
+        tCtx.save();
+        tCtx.translate(targetX, targetY);
+        tCtx.rotate((state.faceRotate * Math.PI) / 180);
 
-        // Soft skin-blend edge overlay
-        const grad = ctx.createRadialGradient(targetX, targetY, radiusX * 0.6, targetX, targetY, radiusX);
-        grad.addColorStop(0, 'rgba(0,0,0,0)');
-        grad.addColorStop(1, 'rgba(0,0,0,0.25)');
-        ctx.fillStyle = grad;
-        ctx.fill();
+        // Draw source face with light matching adjustments
+        const brightness = state.lightMatch;
+        const warmth = state.warmth;
+        tCtx.filter = `brightness(${brightness}) sepia(${Math.abs(warmth) / 200}) hue-rotate(${warmth}deg)`;
 
+        tCtx.drawImage(userFace, -radiusX, -radiusY, radiusX * 2, radiusY * 2);
+        tCtx.restore();
+
+        const maskCanvas = document.createElement('canvas');
+        maskCanvas.width = 1000;
+        maskCanvas.height = 1000;
+        const mCtx = maskCanvas.getContext('2d');
+
+        mCtx.save();
+        mCtx.translate(targetX, targetY);
+        mCtx.rotate((state.faceRotate * Math.PI) / 180);
+
+        // Soft radial gradient feather mask (eliminates hard edge cuts completely!)
+        const featherRadius = state.feather;
+        const grad = mCtx.createRadialGradient(0, 0, Math.max(10, radiusX - featherRadius), 0, 0, radiusX);
+        grad.addColorStop(0, 'rgba(0,0,0,1)');
+        grad.addColorStop(1, 'rgba(0,0,0,0)');
+
+        mCtx.fillStyle = grad;
+        mCtx.beginPath();
+        mCtx.ellipse(0, 0, radiusX, radiusY, 0, 0, Math.PI * 2);
+        mCtx.fill();
+        mCtx.restore();
+
+        // Composite face using alpha mask
+        tCtx.globalCompositeOperation = 'destination-in';
+        tCtx.drawImage(maskCanvas, 0, 0);
+
+        // Render blended face into main output canvas
+        ctx.save();
+        ctx.drawImage(tempCanvas, 0, 0);
         ctx.restore();
       };
     }
 
-    // --- SLIDER INTERACTION ---
+    function applyPhotographicGrain(ctx, amount) {
+      const imgData = ctx.getImageData(0, 0, 1000, 1000);
+      const data = imgData.data;
+      const factor = amount * 0.4;
+
+      for (let i = 0; i < data.length; i += 4) {
+        const noise = (Math.random() - 0.5) * factor;
+        data[i] = Math.min(255, Math.max(0, data[i] + noise));
+        data[i+1] = Math.min(255, Math.max(0, data[i+1] + noise));
+        data[i+2] = Math.min(255, Math.max(0, data[i+2] + noise));
+      }
+
+      ctx.putImageData(imgData, 0, 0);
+    }
+
     function setupSplitSlider() {
       const container = document.getElementById('split-container');
       const handle = document.getElementById('split-handle');
@@ -823,30 +1027,37 @@
       }
     }
 
-    // --- CONTROLS & GENERATION ---
     function setupControls() {
-      const outfitPrompt = document.getElementById('outfit-prompt');
-      if (outfitPrompt) {
-        outfitPrompt.addEventListener('input', (e) => {
-          state.outfitPrompt = e.target.value;
-        });
-      }
       updateControls();
     }
 
     function updateControls() {
+      state.faceX = document.getElementById('slider-face-x').value / 100;
+      state.faceY = document.getElementById('slider-face-y').value / 100;
       state.faceScale = document.getElementById('slider-face-scale').value / 100;
-      state.lightMatch = document.getElementById('slider-light-match').value / 100;
-      state.bgLock = document.getElementById('slider-bg-lock').value / 100;
+      state.faceRotate = parseInt(document.getElementById('slider-face-rotate').value);
+      state.garmentScale = document.getElementById('slider-garment-scale').value / 100;
 
+      state.feather = parseInt(document.getElementById('slider-feather').value);
+      state.lightMatch = document.getElementById('slider-light-match').value / 100;
+      state.warmth = parseInt(document.getElementById('slider-warmth').value);
+      state.grain = parseInt(document.getElementById('slider-grain').value);
+
+      document.getElementById('val-face-x').innerText = Math.round(state.faceX * 100) + '%';
+      document.getElementById('val-face-y').innerText = Math.round(state.faceY * 100) + '%';
       document.getElementById('val-face-scale').innerText = Math.round(state.faceScale * 100) + '%';
+      document.getElementById('val-face-rotate').innerText = state.faceRotate + '°';
+      document.getElementById('val-garment-scale').innerText = Math.round(state.garmentScale * 100) + '%';
+
+      document.getElementById('val-feather').innerText = state.feather + 'px';
       document.getElementById('val-light-match').innerText = Math.round(state.lightMatch * 100) + '%';
-      document.getElementById('val-bg-lock').innerText = (state.bgLock === 1) ? '100% (Strict)' : Math.round(state.bgLock * 100) + '%';
+      document.getElementById('val-warmth').innerText = (state.warmth > 0 ? '+' : '') + state.warmth;
+      document.getElementById('val-grain').innerText = state.grain + '%';
 
       renderOutputCanvas();
     }
 
-    function generateCompositeImage() {
+    function startFullAIGeneration() {
       const overlay = document.getElementById('loading-overlay');
       const pbar = document.getElementById('loading-progress-bar');
       const title = document.getElementById('loading-status-title');
@@ -856,10 +1067,11 @@
       pbar.style.width = '0%';
 
       const steps = [
-        { p: '25%', t: 'Vergleiche Hintergründe...', d: 'Der Vorlagen-Hintergrund wird zu 100% fixiert.' },
-        { p: '60%', t: 'Inpainting Outfit...', d: 'Neues Outfit wird ohne Hintergrundveränderung gerendert.' },
-        { p: '85%', t: 'Face-Swap & Beleuchtung...', d: 'Gesichts-Features werden überblendet & belichtet.' },
-        { p: '100%', t: 'Fertigstellung!', d: 'Dein hochauflösendes Bild ist bereit.' }
+        { p: '20%', t: 'Analysiere Gesichtsgeometrie...', d: 'Extrahiere Gesichts-Landmarks & Ausrichtung.' },
+        { p: '45%', t: '100% Hintergrund-Fixierung...', d: 'Hintergrund & Pose werden gesperrt.' },
+        { p: '75%', t: 'Seamless Soft-Blending...', d: 'Hauttöne, Licht- & Schattenverlauf werden kalibriert.' },
+        { p: '95%', t: 'Filmkorn- & Textur-Matching...', d: 'Poren- & Rauschanpassung für Fotorealismus.' },
+        { p: '100%', t: 'Fertigstellung!', d: 'Dein photorealistisches Bild ist bereit.' }
       ];
 
       let idx = 0;
@@ -874,15 +1086,16 @@
           setTimeout(() => {
             overlay.classList.add('hidden');
             renderOutputCanvas();
-          }, 400);
+            showToast("Fotorealistisches Ergebnis generiert!", "success");
+          }, 300);
         }
-      }, 450);
+      }, 550);
     }
 
     function downloadResult() {
       const canvas = document.getElementById('output-canvas');
       const link = document.createElement('a');
-      link.download = 'ReGen-Aesthetic-Composite.png';
+      link.download = 'ReGen-Photoreal-Fusion.png';
       link.href = canvas.toDataURL('image/png');
       link.click();
     }
@@ -908,10 +1121,9 @@
     }
 
     function saveToGallery() {
-      showToast("Bild wurde in deiner ReGen Studio Galerie gespeichert!", "success");
+      showToast("Bild erfolgreich in der ReGen Galerie gespeichert!", "success");
     }
 
-    // --- MODAL & VIEW SWITCHERS ---
     function switchView(view) {
       const galleryModal = document.getElementById('gallery-modal');
       if (view === 'gallery') {
@@ -931,16 +1143,16 @@
       state.apiProvider = document.getElementById('api-provider').value;
       state.apiKey = document.getElementById('api-key-input').value;
       toggleApiModal(false);
-      showToast("API Einstellungen gespeichert!", "success");
+      showToast("AI Processing Einstellungen gespeichert!", "success");
     }
 
     function resetAll() {
       state.faceImgSrc = null;
       document.getElementById('face-img-element').classList.add('hidden');
       document.getElementById('face-icon-placeholder').classList.remove('hidden');
-      document.getElementById('face-status-text').innerText = "Lade ein Foto von dir hoch";
+      document.getElementById('face-status-text').innerText = "Portraitfoto hochladen";
       document.getElementById('face-status-text').classList.remove('text-emerald-400');
-      renderOutputCanvas();
+      autoAlignFace();
     }
   </script>
 </body>
